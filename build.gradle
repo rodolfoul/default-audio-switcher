@@ -1,0 +1,29 @@
+buildscript {
+	ext.kotlin_version = '1.3.0'
+
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version
+	}
+}
+
+apply plugin: "kotlin"
+
+repositories {
+	jcenter()
+
+	maven {
+		url "https://artifacts.alfresco.com/nexus/content/repositories/public/"
+	}
+}
+
+
+dependencies {
+	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8'
+	implementation group: 'net.java.dev.jna', name: 'jna', version: '5.0.0'
+	implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.0.0'
+
+}
