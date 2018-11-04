@@ -25,5 +25,17 @@ dependencies {
 	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8'
 	implementation group: 'net.java.dev.jna', name: 'jna', version: '5.0.0'
 	implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.0.0'
-
 }
+
+task fatJar(type: Jar) {
+	manifest {
+		attributes('Main-Class': 'MainKt')
+	}
+
+	from sourceSets.main.output
+	from configurations.runtimeClasspath.
+			findAll { it.name.endsWith('jar') }.
+			collect { zipTree(it) }
+}
+
+build.dependsOn fatJar
