@@ -1,4 +1,4 @@
-package com
+package com.imm
 
 import com.sun.jna.platform.win32.COM.COMUtils
 import com.sun.jna.platform.win32.ObjBase
@@ -54,6 +54,13 @@ class IMMDeviceEnumerator : ComUnknown() {
 		return IMMDeviceCollection(result.value)
 	}
 
+	/*
+	 * HRESULT GetDefaultAudioEndpoint(
+	 *   EDataFlow dataFlow,
+	 *   ERole     role,
+	 *   IMMDevice **ppEndpoint
+	 * );
+	 */
 	fun GetDefaultAudioEndpoint(): IMMDevice {
 		val result = PointerByReference()
 

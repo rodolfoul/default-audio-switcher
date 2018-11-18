@@ -1,4 +1,4 @@
-package com
+package com.imm
 
 import com.sun.jna.platform.win32.Guid
 import com.sun.jna.platform.win32.WinDef

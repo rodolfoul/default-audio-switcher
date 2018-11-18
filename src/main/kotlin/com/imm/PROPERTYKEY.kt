@@ -1,4 +1,4 @@
-package com
+package com.imm
 
 import com.sun.jna.Structure
 import com.sun.jna.platform.win32.Guid
@@ -18,5 +18,5 @@ open class PROPERTYKEY : Structure() {
 	var fmtid: Guid.GUID? = null
 
 	@JvmField
-	var pid: WinDef.DWORD? = null
+	var pid: WinDef.DWORD = WinDef.DWORD()
 }
