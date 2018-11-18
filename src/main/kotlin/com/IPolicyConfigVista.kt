@@ -1,3 +1,5 @@
+package com
+
 import com.sun.jna.platform.win32.COM.COMUtils
 import com.sun.jna.platform.win32.ObjBase
 import com.sun.jna.platform.win32.Ole32

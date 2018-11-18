@@ -1,3 +1,5 @@
+package com
+
 import com.sun.jna.platform.win32.COM.COMUtils
 import com.sun.jna.platform.win32.ObjBase
 import com.sun.jna.platform.win32.Ole32
@@ -21,27 +23,35 @@ class IMMDeviceEnumerator : ComUnknown() {
 		pointer = enumeratorPointer.value
 	}
 
+	fun getAudioEndpoints(): List<Pair<String, String>> {
+		EnumAudioEndpoints().use { immDeviceCollection ->
+
+			val list = mutableListOf<Pair<String, String>>()
+			for (i in 0 until immDeviceCollection.GetCount()) {
+				immDeviceCollection.Item(i).use { item ->
+					item.OpenPropertyStore(STGM.STGM_READ).use { propertyStore ->
+						list.add(item.GetId() to propertyStore.GetValue(PKEY_Device_FriendlyName))
+					}
+				}
+			}
+
+			return list
+		}
+	}
+
 	/**
 	 * HRESULT EnumAudioEndpoints(
-	 * EDataFlow           dataFlow,
-	 * DWORD               dwStateMask,
-	 * IMMDeviceCollection **ppDevices
-	);
+	 *   cominterfaces.EDataFlow           dataFlow,
+	 *   DWORD                             dwStateMask,
+	 *   cominterfaces.IMMDeviceCollection **ppDevices
+	 * );
 	 */
-	fun EnumAudioEndpoints(): List<String> {
+	fun EnumAudioEndpoints(): IMMDeviceCollection {
 		val result = PointerByReference()
 
-		comCall(3, arrayOf(EDataFlow.eRender.ordinal, WinDef.DWORD(DeviceState.DEVICE_STATE_ACTIVE.value)))
+		comCall(3, arrayOf(EDataFlow.eRender.ordinal, WinDef.DWORD(DeviceState.DEVICE_STATE_ACTIVE.value), result))
 
-		val immDeviceCollection = IMMDeviceCollection(result.value)
-
-		val list = mutableListOf<String>()
-		for (i in 0 until immDeviceCollection.GetCount()) {
-			val item = immDeviceCollection.Item(i)
-			list.add(item.GetId())
-		}
-
-		return list
+		return IMMDeviceCollection(result.value)
 	}
 
 	fun GetDefaultAudioEndpoint(): IMMDevice {
