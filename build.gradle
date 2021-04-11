@@ -1,26 +1,15 @@
-buildscript {
-	ext.kotlin_version = '1.3.61'
-
-	repositories {
-		jcenter()
-	}
-
-	dependencies {
-		classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version
-	}
+plugins {
+	id 'org.jetbrains.kotlin.jvm' version '1.4.32'
 }
-
-apply plugin: "kotlin"
 
 repositories {
-	jcenter()
+	mavenCentral()
 }
 
-
 dependencies {
-	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8'
-	implementation group: 'net.java.dev.jna', name: 'jna', version: '5.5.0'
-	implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.5.0'
+	def jnaVersion = '5.8.0'
+	implementation group: 'net.java.dev.jna', name: 'jna', version: jnaVersion
+	implementation group: 'net.java.dev.jna', name: 'jna-platform', version: jnaVersion
 }
 
 task fatJar(type: Jar) {
@@ -29,9 +18,9 @@ task fatJar(type: Jar) {
 	}
 
 	from sourceSets.main.output
-	from configurations.runtimeClasspath.
-			findAll { it.name.endsWith('jar') }.
-			collect { zipTree(it) }
+	from configurations.runtimeClasspath
+			.findAll { it.name.endsWith('jar') }
+			.collect { zipTree(it) }
 }
 
 build.dependsOn fatJar

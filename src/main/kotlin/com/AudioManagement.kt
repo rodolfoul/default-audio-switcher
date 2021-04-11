@@ -3,10 +3,7 @@ package com
 import com.imm.IMMDeviceEnumerator
 import com.imm.IPolicyConfigVista
 import com.sun.jna.platform.win32.COM.COMUtils
-import com.sun.jna.platform.win32.COM.util.Factory
 import com.sun.jna.platform.win32.Ole32
-import com.wmp.IWMPPlayer3
-import com.wmp.WindowsMediaPlayer
 import java.util.concurrent.CountDownLatch
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
@@ -57,53 +54,29 @@ fun changeDefaultAudioPlayback() {
 	}
 }
 
-fun comEnv(f: () -> Unit) {
+fun comEnv(runnable: () -> Unit) {
 	val ole32 = Ole32.INSTANCE
 	COMUtils.checkRC(ole32.CoInitialize(null))
 	try {
-		f()
+		runnable()
 	} finally {
 		ole32.CoUninitialize()
 	}
 }
 
 fun playBeep() {
-	javaxPlaySound()
-}
-
-class Dummy
-
-private fun javaxPlaySound() {
-	val audioStream = AudioSystem.getAudioInputStream(Dummy::class.java.getResource("/beeping.wav"))
+	val audioStream = AudioSystem.getAudioInputStream(object {}.javaClass.getResource("/beeping.wav"))
 	val format = audioStream.format
 	val info = DataLine.Info(Clip::class.java, format)
 	val clip = AudioSystem.getLine(info) as Clip
-
 	val clipEndedLatch = CountDownLatch(1)
-
 	clip.addLineListener {
 		if (it.type == LineEvent.Type.STOP) {
 			println("Beep stream stopped")
 			clipEndedLatch.countDown()
 		}
 	}
-
 	clip.open(audioStream)
 	clip.start()
 	clipEndedLatch.await()
-}
-
-
-private fun wmpPlaySound() {
-	val factory = Factory()
-	val windowsMediaPlayer = factory.createObject(WindowsMediaPlayer::class.java)
-
-	val iwmpPlayer3 = windowsMediaPlayer.queryInterface(IWMPPlayer3::class.java)
-	iwmpPlayer3.setEnabled(true)
-	iwmpPlayer3.setURL("beeping.wav")
-	println(iwmpPlayer3.getVersionInfo())
-
-
-	val controls = iwmpPlayer3.getControls()
-	controls.play()
 }
