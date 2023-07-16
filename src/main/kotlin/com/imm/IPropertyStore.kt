@@ -10,7 +10,7 @@ class IPropertyStore(pointer: Pointer) : ComUnknown(pointer) {
      * );
 	 */
 	fun GetValue(pKey: PROPERTYKEY): String {
-		var refpropvariant = PROPVARIANT.REFPROPVARIANT()
+		val refpropvariant = PROPVARIANT.REFPROPVARIANT()
 		comCall(5, arrayOf(pKey, refpropvariant))
 
 		return refpropvariant.pwszVal.value

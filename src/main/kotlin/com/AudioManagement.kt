@@ -19,37 +19,26 @@ fun listAudioSinks() {
 	}
 }
 
-fun changeDefaultAudioPlayback() {
+fun changeDefaultAudioPlayback(name1: String, name2: String) {
 	comEnv {
-		val audioEndpoints = IMMDeviceEnumerator().use {
-			it.getAudioEndpoints()
-		}
+		IMMDeviceEnumerator().use { immEnumerator ->
+			val endpoint1 = immEnumerator.resolveAudioEndpoint(name1)
+			val endpoint2 = immEnumerator.resolveAudioEndpoint(name2)
+			println("Resolving between '${endpoint1.name}' and '${endpoint2.name}'")
 
-		var acerX34Id = ""
-		var astroA50Id = ""
+			val currentDefaultId = immEnumerator.GetDefaultAudioEndpoint().GetId()
 
-		for (audioEndpoint in audioEndpoints) {
-			if (audioEndpoint.second.contains("acer x34", true)) {
-				acerX34Id = audioEndpoint.first
-			} else if (audioEndpoint.second.contains("astro", true)) {
-				astroA50Id = audioEndpoint.first
+			val newDefaultId = if (currentDefaultId == endpoint1.id) {
+				println("Setting default audio to ${endpoint2.name}")
+				endpoint2.id
+			} else {
+				println("Setting default audio to: ${endpoint1.name}")
+				endpoint1.id
 			}
-		}
 
-		val currentDefault = IMMDeviceEnumerator().use {
-			it.GetDefaultAudioEndpoint().GetId()
-		}
-
-		val newDefault = if (acerX34Id == currentDefault) {
-			println("Setting default to Astro A50")
-			astroA50Id
-		} else {
-			println("Setting default to Acer x34")
-			acerX34Id
-		}
-
-		IPolicyConfigVista().use {
-			it.SetDefaultEndpoint(newDefault)
+			IPolicyConfigVista().use {
+				it.SetDefaultEndpoint(newDefaultId)
+			}
 		}
 	}
 }
@@ -72,7 +61,6 @@ fun playBeep() {
 	val clipEndedLatch = CountDownLatch(1)
 	clip.addLineListener {
 		if (it.type == LineEvent.Type.STOP) {
-			println("Beep stream stopped")
 			clipEndedLatch.countDown()
 		}
 	}
