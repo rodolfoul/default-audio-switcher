@@ -1,5 +1,5 @@
 plugins {
-	id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+	id 'org.jetbrains.kotlin.jvm' version '2.0.0'
 }
 
 repositories {
@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-	def jnaVersion = '5.8.0'
+	def jnaVersion = '5.14.0'
 	implementation group: 'net.java.dev.jna', name: 'jna', version: jnaVersion
 	implementation group: 'net.java.dev.jna', name: 'jna-platform', version: jnaVersion
 }

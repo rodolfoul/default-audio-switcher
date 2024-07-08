@@ -1,0 +1,1 @@
+java -jar C:\Users\Rodolfo\workspace\default-audio-switcher\build\libs\default-audio-switcher.jar Headphones Acer
